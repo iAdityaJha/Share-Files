@@ -1,0 +1,98 @@
+class Solution {
+
+    public int MaxConnection(int grid[][]) {
+        // Your code here
+        int n=grid.length;
+        int m=grid[0].length;
+        int[][] val=new int[n][m];
+        int[][] id=new int[n][m];
+        boolean[][] vis=new boolean[n][m];
+        boolean[][] vis2=new boolean[n][m];
+        int p=1;
+        int toMax=-1;
+        for(int i=0;i<grid.length;i++){
+            for(int j=0;j<grid[0].length;j++){
+                if(grid[i][j]==1 && !vis[i][j]){
+                int data=dfs(i,j,vis,grid);
+                    // System.out.println(data);
+                toMax=Math.max(toMax,data);
+                dfsToValue(i,j,vis2,grid,val,data,id,p);
+                p++;
+                }
+            }
+        }
+        int max=0;
+        for(int i=0;i<grid.length;i++){
+            for(int j=0;j<grid[0].length;j++){
+                if(grid[i][j]==0){
+                List<Integer> list= new ArrayList<>();
+                HashSet<Integer> st=new HashSet<>();
+                    if(j>0 && grid[i][j-1]==1){
+                        int tempData=val[i][j-1];
+                        int tempId=id[i][j-1];
+                        if(!st.contains(tempId)){
+                            list.add(tempData);
+                            st.add(tempId);
+                        }
+                    }
+                    if(i>0 && grid[i-1][j]==1){
+                        int tempData=val[i-1][j];
+                        int tempId=id[i-1][j];
+                        if(!st.contains(tempId)){
+                            list.add(tempData);
+                            st.add(tempId);
+                        }
+                    }
+                    if(i<n-1 && grid[i+1][j]==1){
+                        int tempData=val[i+1][j];
+                        int tempId=id[i+1][j];
+                        if(!st.contains(tempId)){
+                            list.add(tempData);
+                            st.add(tempId);
+                        }
+                    }
+                    if(j<m-1 && grid[i][j+1]==1){
+                        int tempData=val[i][j+1];
+                        int tempId=id[i][j+1];
+                        if(!st.contains(tempId)){
+                            list.add(tempData);
+                            st.add(tempId);
+                        }
+                    }
+                    int ans=0;
+                    for(int num : list){
+                        ans+=num;
+                    }
+                    max=Math.max(ans+1,max);
+                }
+
+            }
+        }
+                    max=Math.max(toMax,max);
+        return max;
+    }
+    private static void dfsToValue(int i, int j, boolean[][] vis, int[][] grid,int[][] val,int data,int[][] id, int p){
+        int n=grid.length;
+        int m=grid[0].length;
+        if(i>=n ||i<0 ||j>=m ||j<0 || grid[i][j]==0 || vis[i][j]) return ;
+        vis[i][j]=true;
+        val[i][j]=data;
+        id[i][j]=p;
+        dfsToValue(i+1,j,vis,grid,val,data,id,p);
+        dfsToValue(i,j+1,vis,grid,val,data,id,p);
+        dfsToValue(i-1,j,vis,grid,val,data,id,p);
+        dfsToValue(i,j-1,vis,grid,val,data,id,p);
+    }
+    private static int dfs(int i, int j, boolean[][] vis,int[][] grid){
+        int n=grid.length;
+        int m=grid[0].length;
+        if(i>=n ||i<0 ||j>=m ||j<0 || grid[i][j]==0 || vis[i][j]) return 0;
+        vis[i][j]=true;
+        int ans=0;
+        ans+=dfs(i+1,j,vis,grid);
+        ans+=dfs(i,j+1,vis,grid);
+        ans+=dfs(i-1,j,vis,grid);
+        ans+=dfs(i,j-1,vis,grid);
+        return ans+1;
+    }
+}
